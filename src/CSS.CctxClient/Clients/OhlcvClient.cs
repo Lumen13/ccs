@@ -1,0 +1,38 @@
+﻿using ccxt;
+using CSS.CctxClient.Interfaces;
+using CSS.CctxClient.Mappers;
+using CSS.CctxClient.Models;
+
+namespace CSS.CctxClient.Clients;
+
+internal sealed class OhlcvClient : IOhlcvClient
+{
+    private readonly Bybit _exchange = new();
+
+    public async Task<List<OhlcvModel>> FetchOHLCV(
+        string symbol = "BTC/USDT",
+        string timeFrame = "30m",
+        long? since = 0,
+        long limit = 10,
+        Dictionary<string, object>? parameters = null
+    )
+    {
+        if (parameters == null)
+        {
+            parameters = new() { { "category", "linear" } };
+        }
+        else
+        {
+            parameters.TryAdd("category", "linear");
+        }
+
+        List<OHLCV> ohlcvList = await _exchange.FetchOHLCV(
+            symbol: symbol,
+            timeframe: timeFrame,
+            since2: since,
+            limit2: limit,
+            parameters: parameters);
+
+        return ohlcvList.ToModelList();
+    }
+}

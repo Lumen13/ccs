@@ -28,6 +28,12 @@ project.lock.json
 project.fragment.lock.json
 artifacts/
 
+# Settings, output, rubbish
+
+*.vs
+/output
+!appsettings.Development.json
+
 # ASP.NET Scaffolding
 ScaffoldingReadMe.txt
 
@@ -52,3 +58,4 @@ CodeCoverage/
 *.VisualState.xml
 TestResult.xml
 nunit-*.xml
+src/CCS/appsettings.Development.json
