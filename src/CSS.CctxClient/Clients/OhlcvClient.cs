@@ -1,13 +1,19 @@
 ﻿using ccxt;
 using CSS.CctxClient.Interfaces;
 using CSS.CctxClient.Mappers;
-using CSS.CctxClient.Models;
+using CSS.Core.Models;
 
 namespace CSS.CctxClient.Clients;
 
 internal sealed class OhlcvClient : IOhlcvClient
 {
     private readonly Bybit _exchange = new();
+    private readonly IOhlcvValidator _validator;
+
+    public OhlcvClient(IOhlcvValidator validator)
+    {
+        _validator = validator;
+    }
 
     public async Task<List<OhlcvModel>> FetchOHLCV(
         string symbol = "BTC/USDT",
@@ -33,6 +39,6 @@ internal sealed class OhlcvClient : IOhlcvClient
             limit2: limit,
             parameters: parameters);
 
-        return ohlcvList.ToModelList();
+        return ohlcvList.ToModelList(_validator);
     }
 }

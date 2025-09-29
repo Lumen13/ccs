@@ -1,4 +1,4 @@
-﻿using CSS.CctxClient.Models;
+﻿using CSS.Core.Models;
 
 namespace CSS.Core.Interfaces;
 

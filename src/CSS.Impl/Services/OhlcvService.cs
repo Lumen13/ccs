@@ -1,18 +1,16 @@
 ﻿using System.Reflection;
 using CSS.CctxClient.Interfaces;
-using CSS.CctxClient.Models;
+using CSS.Core.Models;
 using CSS.Core.Interfaces;
-using Newtonsoft.Json;
-using Formatting = Newtonsoft.Json.Formatting;
 
 namespace CSS.Impl.Services;
 
 internal sealed class OhlcvService(
-    IOhlcvClient ohlcvClient
+    IOhlcvClient ohlcvClient,
+    IOhlcvExportService exportService
     ) : IOhlcvService
 {
-    private readonly string _filePath = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\..\\..\\..\\..\\..\\" +
-        $"output\\OhlcvData.json";
+    private readonly string _rootOutputDir = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\..\\..\\..\\..\\..\\output";
 
     /// <summary>
     /// Получение данных Ohlcv
@@ -32,8 +30,6 @@ internal sealed class OhlcvService(
         Dictionary<string, object>? parameters = null
     )
     {
-        StreamWriter streamWriter = new(_filePath, false);
-
         List<OhlcvModel> ohlcvList = await ohlcvClient.FetchOHLCV(
             parameters: parameters,
             symbol: symbol,
@@ -42,16 +38,15 @@ internal sealed class OhlcvService(
             limit: limit++);
         ohlcvList.RemoveAt(ohlcvList.Count - 1);
 
-        string json = JsonConvert.SerializeObject(ohlcvList, Formatting.Indented);
-        WriteLineToConsoleAndFile(ref streamWriter, json);
+        string folderName = DateTime.UtcNow.ToString("dd-MM-yyyy_HH-mm-ss");
+        string outputDir = Path.Combine(_rootOutputDir, folderName);
+        Directory.CreateDirectory(outputDir);
 
-        streamWriter.Close();
+        string csvPath = Path.Combine(outputDir, "OhlcvData.csv");
+        string xlsxPath = Path.Combine(outputDir, "OhlcvData.xlsx");
 
-        static void WriteLineToConsoleAndFile(ref StreamWriter streamWriter, string line)
-        {
-            Console.WriteLine(line);
-            streamWriter.WriteLine(line);
-        }
+        await exportService.ExportCsvAsync(ohlcvList, csvPath);
+        await exportService.ExportXlsxAsync(ohlcvList, xlsxPath, "dd-MM-yyyy HH:mm:ss");
 
         return ohlcvList;
     }

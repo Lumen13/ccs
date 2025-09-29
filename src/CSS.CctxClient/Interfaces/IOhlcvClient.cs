@@ -1,5 +1,5 @@
 ﻿using ccxt;
-using CSS.CctxClient.Models;
+using CSS.Core.Models;
 
 namespace CSS.CctxClient.Interfaces;
 

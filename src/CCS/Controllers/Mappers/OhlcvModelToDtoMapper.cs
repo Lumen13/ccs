@@ -1,5 +1,5 @@
 ﻿using CCS.Controllers.Dto;
-using CSS.CctxClient.Models;
+using CSS.Core.Models;
 
 namespace CCS.Controllers.Mappers;
 

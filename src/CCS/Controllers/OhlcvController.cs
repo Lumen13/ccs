@@ -1,6 +1,6 @@
 ﻿using CCS.Controllers.Dto;
 using CCS.Controllers.Mappers;
-using CSS.CctxClient.Models;
+using CSS.Core.Models;
 using CSS.Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,7 +24,7 @@ public class OhlcvController(
         long limit = 10,
         Dictionary<string, object>? parameters = null)
     {
-        List<OhlcvModel> data = await ohlcvService.Get();
+        List<OhlcvModel> data = await ohlcvService.Get(symbol, timeFrame, since, limit, parameters);
 
         return data.ToDtoList();
     }
