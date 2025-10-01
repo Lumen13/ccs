@@ -1,2 +1,2 @@
 # ccs
-CryptoCurrency Service. Trading exchange OHLCV data processing
+CryptoCurrency Service. Analysis and processing of OHLCV and other data from trading exchanges
