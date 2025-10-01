@@ -1,6 +1,8 @@
+using CCS.Core.Interfaces;
+using CCS.Core.Options;
+using CCS.Infr.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using CCS.Core.Options;
 
 namespace CCS.Infr;
 
@@ -21,7 +23,7 @@ public static class ServiceCollectionExtensions
             DbContextOptionsConfigurator.ConfigureCommon(options, connectionString);
         });
 
-        services.AddScoped<CCS.Core.Interfaces.IRepository, CCS.Infr.Services.OhlcvRepository>();
+        services.AddScoped<IOhlcvRepository, OhlcvRepository>();
 
         return services;
     }

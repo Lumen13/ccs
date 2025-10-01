@@ -16,6 +16,7 @@ internal sealed class OhlcvService(
     ILogger<OhlcvService> logger
     ) : IOhlcvService
 {
+    private const int LastCandleIncrement = 1;
     private readonly string rootOutputDir = !string.IsNullOrWhiteSpace(options.Value.RootOutputDir)
         ? options.Value.RootOutputDir
         : throw new ArgumentNullException(nameof(options.Value.RootOutputDir));
@@ -46,13 +47,13 @@ internal sealed class OhlcvService(
             symbol: symbol,
             timeFrame: timeFrame,
             since: since,
-            limit: limit++);
+            limit: limit + LastCandleIncrement);
         if (ohlcvList.Count == 0)
         {
             logger.LogInformation("FetchOHLCV empty response");
             return [];
         }
-        ohlcvList.RemoveAt(ohlcvList.Count - 1);
+        ohlcvList.RemoveAt(ohlcvList.Count - LastCandleIncrement);
 
         string folderName = DateTime.UtcNow.ToString("dd-MM-yyyy_HH-mm-ss");
         string outputDir = Path.Combine(rootOutputDir, folderName);
@@ -61,8 +62,8 @@ internal sealed class OhlcvService(
         string csvPath = Path.Combine(outputDir, "OhlcvData.csv");
         string xlsxPath = Path.Combine(outputDir, "OhlcvData.xlsx");
 
-        await fileExportService.ExportCsvAsync(ohlcvList, csvPath);
-        await fileExportService.ExportXlsxAsync(ohlcvList, xlsxPath, DateTimeConstants.DateFormat);
+        await fileExportService.ExportCsvAsync(ohlcvList, csvPath, ct);
+        await fileExportService.ExportXlsxAsync(ohlcvList, xlsxPath, DateTimeConstants.DateFormat, ct);
         await repository.AddRangeAsync(ohlcvList, ct);
 
         logger.LogInformation("FetchOHLCV. Successfull");

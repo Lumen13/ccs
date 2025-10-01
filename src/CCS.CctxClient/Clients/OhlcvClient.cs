@@ -5,15 +5,10 @@ using CCS.Core.Models;
 
 namespace CCS.CctxClient.Clients;
 
-internal sealed class OhlcvClient : IOhlcvClient
+internal sealed class OhlcvClient(IOhlcvValidator validator) : IOhlcvClient
 {
     private readonly Bybit _exchange = new();
-    private readonly IOhlcvValidator _validator;
-
-    public OhlcvClient(IOhlcvValidator validator)
-    {
-        _validator = validator;
-    }
+    private readonly IOhlcvValidator _validator = validator;
 
     public async Task<List<OhlcvModel>> FetchOHLCV(
         string symbol = "BTC/USDT",

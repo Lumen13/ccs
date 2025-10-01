@@ -7,7 +7,7 @@ namespace CCS;
 /// </summary>
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddOptions(this IServiceCollection services, IConfiguration config)
+    public static IServiceCollection AddServiceOptions(this IServiceCollection services, IConfiguration config)
     {
         services.Configure<CcsOptions>(config);
 

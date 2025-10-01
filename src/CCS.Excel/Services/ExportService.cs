@@ -12,7 +12,7 @@ internal sealed class ExportService : IExportService
     private readonly CultureInfo culture = CultureInfo.InvariantCulture;
     private readonly string dateTimeFormat = "yyyy-MM-dd HH:mm:ss";
 
-    public async Task ExportCsvAsync(IEnumerable<OhlcvModel> data, string filePath)
+    public async Task ExportCsvAsync(IEnumerable<OhlcvModel> data, string filePath, CancellationToken ct = default)
     {
         Directory.CreateDirectory(Path.GetDirectoryName(filePath)!);
 
@@ -30,6 +30,8 @@ internal sealed class ExportService : IExportService
 
         foreach (var item in data)
         {
+            ct.ThrowIfCancellationRequested();
+
             string timestamp = item.Timestamp.ToString(dateTimeFormat, culture);
             string open = item.Open.ToString(culture);
             string high = item.High.ToString(culture);
@@ -43,7 +45,7 @@ internal sealed class ExportService : IExportService
         await writer.FlushAsync();
     }
 
-    public Task ExportXlsxAsync(IEnumerable<OhlcvModel> data, string filePath, string dateFormat = DateTimeConstants.DateFormat)
+    public Task ExportXlsxAsync(IEnumerable<OhlcvModel> data, string filePath, string dateFormat = DateTimeConstants.DateFormat, CancellationToken ct = default)
     {
         Directory.CreateDirectory(Path.GetDirectoryName(filePath)!);
 
@@ -61,6 +63,8 @@ internal sealed class ExportService : IExportService
         int row = 2;
         foreach (var item in data)
         {
+            ct.ThrowIfCancellationRequested();
+
             sheet.Cell(row, 1).Value = item.Timestamp;
             sheet.Cell(row, 1).Style.DateFormat.Format = dateFormat;
 
