@@ -12,6 +12,7 @@ internal sealed class OhlcvService(
     IOhlcvClient ohlcvClient,
     IExportService fileExportService,
     IOhlcvRepository repository,
+    IExportPathProvider exportPathProvider,
     IOptions<CcsOptions> options,
     ILogger<OhlcvService> logger
     ) : IOhlcvService
@@ -55,8 +56,7 @@ internal sealed class OhlcvService(
         }
         ohlcvList.RemoveAt(ohlcvList.Count - LastCandleIncrement);
 
-        string folderName = DateTime.UtcNow.ToString("dd-MM-yyyy_HH-mm-ss");
-        string outputDir = Path.Combine(rootOutputDir, folderName);
+        string outputDir = exportPathProvider.GetOutputDirectory(rootOutputDir, DateTime.UtcNow);
         Directory.CreateDirectory(outputDir);
 
         string csvPath = Path.Combine(outputDir, "OhlcvData.csv");

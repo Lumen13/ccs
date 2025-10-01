@@ -11,6 +11,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<IOhlcvValidator, OhlcvValidator>();
         services.AddScoped<IOhlcvService, OhlcvService>();
+        services.AddScoped<IExportPathProvider, DefaultExportPathProvider>();
 
         return services;
     }
