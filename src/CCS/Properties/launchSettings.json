@@ -1,14 +1,13 @@
 {
   "profiles": {
-    "CSS": {
+    "CCS": {
       "commandName": "Project",
-      "dotnetRunMessages": true,
-      "launchBrowser": false,
       "launchUrl": "swagger",
-      "applicationUrl": "https://localhost:7150;http://localhost:5078",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+      },
+      "dotnetRunMessages": true,
+      "applicationUrl": "https://localhost:7150;http://localhost:5078"
     },
     "Container (Dockerfile)": {
       "commandName": "Docker",

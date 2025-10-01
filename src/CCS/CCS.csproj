@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
@@ -11,14 +11,23 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.9" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.9">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1" />
     <PackageReference Include="Scalar.AspNetCore" Version="2.8.6" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\CSS.Infr\CSS.Infr.csproj" />
-    <ProjectReference Include="..\CSS.Core\CSS.Core.csproj" />
-    <ProjectReference Include="..\CSS.Impl\CSS.Impl.csproj" />
+    <ProjectReference Include="..\CCS.Core\CCS.Core.csproj" />
+    <ProjectReference Include="..\CCS.Impl\CCS.Impl.csproj" />
+    <ProjectReference Include="..\CCS.Infr\CCS.Infr.csproj" />
+    <ProjectReference Include="..\CCS.Excel\CCS.Excel.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Docker\" />
   </ItemGroup>
 
 </Project>

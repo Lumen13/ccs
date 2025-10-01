@@ -1,13 +1,13 @@
-﻿using CCS.Controllers.Dto;
+﻿using Microsoft.AspNetCore.Mvc;
+using CCS.Controllers.Dto;
 using CCS.Controllers.Mappers;
-using CSS.Core.Models;
-using CSS.Core.Interfaces;
-using Microsoft.AspNetCore.Mvc;
+using CCS.Core.Interfaces;
+using CCS.Core.Models;
 
 namespace CCS.Controllers;
 
 /// <summary>
-/// Контроллер для работы с Ohlcv
+/// Controller for working with OHLCV data
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
@@ -22,9 +22,10 @@ public class OhlcvController(
         string timeFrame = "30m",
         long? since = 0,
         long limit = 10,
-        Dictionary<string, object>? parameters = null)
+        Dictionary<string, object>? parameters = null,
+        CancellationToken ct = default)
     {
-        List<OhlcvModel> data = await ohlcvService.Get(symbol, timeFrame, since, limit, parameters);
+        List<OhlcvModel> data = await ohlcvService.Get(symbol, timeFrame, since, limit, parameters, ct);
 
         return data.ToDtoList();
     }

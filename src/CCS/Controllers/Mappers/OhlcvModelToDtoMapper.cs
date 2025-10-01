@@ -1,10 +1,10 @@
 ﻿using CCS.Controllers.Dto;
-using CSS.Core.Models;
+using CCS.Core.Models;
 
 namespace CCS.Controllers.Mappers;
 
 /// <summary>
-/// Ohlcv маппер
+/// OHLCV mapper: Model -> DTO
 /// </summary>
 public static class OhlcvModelToDtoMapper
 {

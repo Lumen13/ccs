@@ -1,12 +1,12 @@
 ﻿namespace CCS.Controllers.Dto;
 
 /// <summary>
-/// DTO Ohlcv candle
+/// DTO for an OHLCV candle
 /// </summary>
 public readonly record struct OhlcvDto
 {
     public OhlcvDto(
-        long timestamp,
+        DateTime timestamp,
         double open,
         double close,
         double high,
@@ -21,33 +21,33 @@ public readonly record struct OhlcvDto
         Volume = volume;
     }
 
-    /// <summary>
-    /// Время 
-    /// </summary>
-    public long Timestamp { get; init; }
+/// <summary>
+/// Timestamp
+/// </summary>
+    public DateTime Timestamp { get; init; }
 
-    /// <summary>
-    /// Сумма на момент открытия Body
-    /// </summary>
+/// <summary>
+/// Open price
+/// </summary>
     public double Open { get; init; }
 
-    /// <summary>
-    /// Сумма на момент закрытия Body
-    /// </summary>
+/// <summary>
+/// Close price
+/// </summary>
     public double Close { get; init; }
 
-    /// <summary>
-    /// Предельная достигнутая сумма Wiki
-    /// </summary>
+/// <summary>
+/// Highest price during the interval
+/// </summary>
     public double High { get; init; }
 
-    /// <summary>
-    /// Минимальная достигнутая сумма Wiki
-    /// </summary>
+/// <summary>
+/// Lowest price during the interval
+/// </summary>
     public double Low { get; init; }
 
-    /// <summary>
-    /// Кол-во сделок в рамках текущей candle (НЕ ТОЧНО)
-    /// </summary>
+/// <summary>
+/// Traded volume during the interval (approximation)
+/// </summary>
     public double Volume { get; init; }
 }
