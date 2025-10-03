@@ -1,27 +1,30 @@
-﻿using CCS.Core.Models;
+﻿using CCS.Core.Constants;
+using CCS.Core.Models;
 
 namespace CCS.CctxClient.Interfaces;
 
 /// <summary>
-/// Клиент cctx для работы с Ohlcv
+/// Cctx client for working with OHLCV data
 /// </summary>
 public interface IOhlcvClient
 {
     /// <summary>
-    /// Основной метод получения данных Ohlcv
+    /// Main method for fetching OHLCV data
     /// </summary>
-    /// <param name="symbol">Символ отождествляющий валюту биржи</param>
-    /// <param name="timeFrame">Время за которое необходимо выгрузить данные</param>
-    /// <param name="since">Точка отчёта "с" (НЕ ТОЧНО)</param>
-    /// <param name="limit">Ограничение кол-ва записей</param>
-    /// <param name="parameters">Дополнительные параметры. Например "interval". 
-    /// Параметр "category" ("linear") является обязательным для получения корректной информации</param>
-    /// <returns>Список Ohlcv в виде структуры cctx</returns>
-    Task<List<OhlcvModel>> FetchOHLCV(
-        string symbol = "BTC/USDT",
+    /// <param name="symbol">Exchange symbol</param>
+    /// <param name="timeFrame">Timeframe to fetch</param>
+    /// <param name="from">Starting "since" date</param>
+    /// <param name="to">Ending "since" date</param>
+    /// <param name="limit">Maximum number of records</param>
+    /// <param name="parameters">Additional parameters. For example, "interval".
+    /// Parameter "category" ("linear") is required to obtain correct information</param>
+    /// <returns>List of OHLCV models</returns>
+    Task<List<OhlcvModel>> FetchOhlcv(
+        OhlcvSymbol? symbol = null,
         string timeFrame = "30m",
-        long? since = 0,
-        long limit = 10,
+        DateTime? from = null,
+        DateTime? to = null,
+        long limit = 1000,
         Dictionary<string, object>? parameters = null
     );
 }

@@ -1,39 +1,52 @@
-﻿using ccxt;
-using CCS.CctxClient.Interfaces;
+﻿using CCS.CctxClient.Interfaces;
 using CCS.CctxClient.Mappers;
+using CCS.Core.Constants;
 using CCS.Core.Models;
+using ccxt;
 
 namespace CCS.CctxClient.Clients;
 
 internal sealed class OhlcvClient(IOhlcvValidator validator) : IOhlcvClient
 {
     private readonly Bybit _exchange = new();
-    private readonly IOhlcvValidator _validator = validator;
 
-    public async Task<List<OhlcvModel>> FetchOHLCV(
-        string symbol = "BTC/USDT",
+    public async Task<List<OhlcvModel>> FetchOhlcv(
+        OhlcvSymbol? symbol = null,
         string timeFrame = "30m",
-        long? since = 0,
-        long limit = 10,
+        DateTime? from = null,
+        DateTime? to = null,
+        long limit = 1000,
         Dictionary<string, object>? parameters = null
     )
     {
-        if (parameters == null)
-        {
-            parameters = new() { { "category", "linear" } };
-        }
-        else
-        {
-            parameters.TryAdd("category", "linear");
-        }
-
         List<OHLCV> ohlcvList = await _exchange.FetchOHLCV(
-            symbol: symbol,
+            symbol: symbol ?? OhlcvSymbol.Btc,
             timeframe: timeFrame,
-            since2: since,
+            since2: AddSince(from, to),
             limit2: limit,
-            parameters: parameters);
+            parameters: AddParameters(parameters));
 
-        return ohlcvList.ToModelList(_validator);
+        return ohlcvList.ToModelList(validator);
+    }
+
+    private long AddSince(DateTime? from, DateTime? to)
+    {
+        long since = 0;
+        if (from != null && to != null)
+        {
+            TimeSpan dateDiff = to.Value.Subtract(from.Value);
+            var totalMs = (long)dateDiff.TotalMilliseconds;
+            since = _exchange.milliseconds() - totalMs;
+        }
+
+        return since;
+    }
+
+    private static Dictionary<string, object> AddParameters(Dictionary<string, object>? parameters)
+    {
+        parameters ??= new() { { "category", "linear" } };
+        parameters.TryAdd("category", "linear");
+
+        return parameters;
     }
 }
