@@ -11,7 +11,7 @@ internal sealed class OhlcvClient(IOhlcvValidator validator) : IOhlcvClient
     private readonly Bybit _exchange = new();
 
     public async Task<List<OhlcvModel>> FetchOhlcv(
-        OhlcvSymbol? symbol = null,
+        string symbol = OhlcvSymbolConstants.Btc,
         string timeFrame = "30m",
         DateTime? from = null,
         DateTime? to = null,
@@ -20,7 +20,7 @@ internal sealed class OhlcvClient(IOhlcvValidator validator) : IOhlcvClient
     )
     {
         List<OHLCV> ohlcvList = await _exchange.FetchOHLCV(
-            symbol: symbol ?? OhlcvSymbol.Btc,
+            symbol: symbol,
             timeframe: timeFrame,
             since2: AddSince(from, to),
             limit2: limit,

@@ -11,15 +11,45 @@ public static class OhlcvSymbolConstants
 }
 
 /// <summary>
-/// OhlcvSymbol record-based enum for type safety and Swagger dropdown
+/// OhlcvSymbol enum for type safety and Scalar dropdown
 /// </summary>
-public record OhlcvSymbol(string Value)
+public enum OhlcvSymbol
 {
-    public static readonly OhlcvSymbol Btc = new(OhlcvSymbolConstants.Btc);
-    public static readonly OhlcvSymbol Sol = new(OhlcvSymbolConstants.Sol);
-    public static readonly OhlcvSymbol Eth = new(OhlcvSymbolConstants.Eth);
+    /// <summary>
+    /// Bitcoin/USDT symbol
+    /// </summary>
+    Btc,
     
-    public static implicit operator string(OhlcvSymbol symbol) => symbol.Value;
-    public static implicit operator OhlcvSymbol(string value) => new(value);
+    /// <summary>
+    /// Solana/USDT symbol
+    /// </summary>
+    Sol,
+    
+    /// <summary>
+    /// Ethereum/USDT symbol
+    /// </summary>
+    Eth
+}
+
+/// <summary>
+/// Extension methods for OhlcvSymbol enum
+/// </summary>
+public static class OhlcvSymbolExtensions
+{
+    public static string ToStringValue(this OhlcvSymbol symbol) => symbol switch
+    {
+        OhlcvSymbol.Btc => OhlcvSymbolConstants.Btc,
+        OhlcvSymbol.Sol => OhlcvSymbolConstants.Sol,
+        OhlcvSymbol.Eth => OhlcvSymbolConstants.Eth,
+        _ => throw new ArgumentException("Unknown symbol")
+    };
+    
+    public static OhlcvSymbol FromStringValue(string value) => value switch
+    {
+        OhlcvSymbolConstants.Btc => OhlcvSymbol.Btc,
+        OhlcvSymbolConstants.Sol => OhlcvSymbol.Sol,
+        OhlcvSymbolConstants.Eth => OhlcvSymbol.Eth,
+        _ => throw new ArgumentException($"Unknown symbol: {value}")
+    };
 }
 

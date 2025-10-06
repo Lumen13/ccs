@@ -3,7 +3,6 @@ using CCS.Core.Options;
 using CCS.Excel;
 using CCS.Impl;
 using CCS.Infr;
-using Scalar.AspNetCore;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +19,9 @@ services.AddOpenApi(options =>
         return Task.CompletedTask;
     });
 });
+
+services.AddSwaggerGen();
+
 services.AddServices();
 services.AddCctxClients();
 services.AddInfrastructure();
@@ -33,8 +35,8 @@ app.MapDefaultControllerRoute();
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
-    app.MapOpenApi();
-    app.MapScalarApiReference(options => options.Theme = ScalarTheme.Alternate);
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 app.UseHttpsRedirection();
 app.MapControllers();

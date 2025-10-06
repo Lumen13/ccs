@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc;
 using CCS.Controllers.Dto;
 using CCS.Controllers.Mappers;
 using CCS.Core.Constants;
@@ -30,7 +31,9 @@ public class OhlcvController(
     [HttpGet]
     [ProducesResponseType(typeof(List<OhlcvDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<List<OhlcvDto>>> Get(
-        [FromQuery] OhlcvSymbol? symbol = null,
+        [FromQuery] 
+        [EnumDataType(typeof(OhlcvSymbol))]
+        OhlcvSymbol? symbol = null,
         string timeFrame = "30m",
         DateTime? from = null,
         DateTime? to = null,

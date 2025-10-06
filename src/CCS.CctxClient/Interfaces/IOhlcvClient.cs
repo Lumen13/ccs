@@ -20,7 +20,7 @@ public interface IOhlcvClient
     /// Parameter "category" ("linear") is required to obtain correct information</param>
     /// <returns>List of OHLCV models</returns>
     Task<List<OhlcvModel>> FetchOhlcv(
-        OhlcvSymbol? symbol = null,
+        string symbol = OhlcvSymbolConstants.Btc,
         string timeFrame = "30m",
         DateTime? from = null,
         DateTime? to = null,

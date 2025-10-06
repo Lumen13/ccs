@@ -34,9 +34,12 @@ internal sealed class OhlcvService(
     {
         logger.LogInformation("FetchOHLCV. Prepare to get data");
 
+        OhlcvSymbol actualSymbol = symbol ?? OhlcvSymbol.Btc;
+        string symbolString = actualSymbol.ToStringValue();
+        
         List<OhlcvModel> ohlcvList = await ohlcvClient.FetchOhlcv(
             parameters: parameters,
-            symbol: symbol,
+            symbol: symbolString,
             timeFrame: timeFrame,
             from: from,
             to: to,
