@@ -36,14 +36,18 @@ internal sealed class OhlcvService(
 
         OhlcvSymbol actualSymbol = symbol ?? OhlcvSymbol.Btc;
         string symbolString = actualSymbol.ToStringValue();
-        
-        List<OhlcvModel> ohlcvList = await ohlcvClient.FetchOhlcv(
+        List<OhlcvModel> ohlcvList = new();
+
+        //цикл и повторные запросы
+        List<OhlcvModel> data = await ohlcvClient.FetchOhlcv(
             parameters: parameters,
             symbol: symbolString,
             timeFrame: timeFrame,
             from: from,
             to: to,
             limit: limit + LastCandleIncrement);
+        ohlcvList = data; //временная строка. заменить на Add
+
         if (ohlcvList.Count == 0)
         {
             logger.LogInformation("FetchOHLCV empty response");
