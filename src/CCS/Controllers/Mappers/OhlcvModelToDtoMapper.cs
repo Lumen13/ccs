@@ -27,4 +27,16 @@ public static class OhlcvModelToDtoMapper
 
         return ohlcvModelList;
     }
+
+    public static OhlcvDtoList ToOhlcvDtoList(this OhlcvModels ohlcvModels)
+    {
+        OhlcvDtoList ohlcvDtoList = new(
+            ohlcvModels.Data.ToDtoList(),
+            ohlcvModels.Min,
+            ohlcvModels.Max,
+            ohlcvModels.Days,
+            ohlcvModels.Count);
+
+        return ohlcvDtoList;
+    }
 }

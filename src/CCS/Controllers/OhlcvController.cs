@@ -1,10 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Mvc;
 using CCS.Controllers.Dto;
 using CCS.Controllers.Mappers;
 using CCS.Core.Constants;
 using CCS.Core.Interfaces;
 using CCS.Core.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CCS.Controllers;
 
@@ -20,29 +20,27 @@ public class OhlcvController(
     /// <summary>
     /// Main method for fetching OHLCV data
     /// </summary>
+    /// <param name="days">Days count to take</param>
+    /// <param name="runSingleRequest">Single request run flag (without loop)</param>
     /// <param name="symbol">Exchange symbol</param>
     /// <param name="timeFrame">Timeframe to fetch</param>
-    /// <param name="from">Starting "since" date</param>
-    /// <param name="to">Ending "since" date</param>
     /// <param name="limit">Maximum number of records</param>
     /// <param name="parameters">Additional parameters. For example, "interval".
     /// Parameter "category" ("linear") is required to obtain correct information</param>
     /// <returns>List of OHLCV models</returns>
     [HttpGet]
-    [ProducesResponseType(typeof(List<OhlcvDto>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<List<OhlcvDto>>> Get(
-        [FromQuery] 
-        [EnumDataType(typeof(OhlcvSymbol))]
-        OhlcvSymbol? symbol = null,
+    [ProducesResponseType(typeof(OhlcvDtoList), StatusCodes.Status200OK)]
+    public async Task<ActionResult<OhlcvDtoList>> Get(
+        [Required, Range(1, int.MaxValue)] int days,
+        bool runSingleRequest = false,
+        [FromQuery][EnumDataType(typeof(OhlcvSymbol))] OhlcvSymbol? symbol = null,
         string timeFrame = "30m",
-        DateTime? from = null,
-        DateTime? to = null,
         long limit = 1000,
         Dictionary<string, object>? parameters = null,
         CancellationToken ct = default)
     {
-        List<OhlcvModel> data = await ohlcvService.Get(symbol, timeFrame, from, to, limit, parameters, ct);
+        OhlcvModels ohlcvModels = await ohlcvService.Get(days, runSingleRequest, symbol, timeFrame, limit, parameters, ct);
 
-        return data.ToDtoList();
+        return ohlcvModels.ToOhlcvDtoList();
     }
 }

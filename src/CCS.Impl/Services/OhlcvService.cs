@@ -3,6 +3,8 @@ using CCS.Core.Constants;
 using CCS.Core.Interfaces;
 using CCS.Core.Models;
 using CCS.Core.Options;
+using DocumentFormat.OpenXml.Bibliography;
+using DocumentFormat.OpenXml.Drawing.Charts;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -22,11 +24,11 @@ internal sealed class OhlcvService(
         ? options.Value.RootOutputDir
         : throw new ArgumentNullException(nameof(options.Value.RootOutputDir));
 
-    public async Task<List<OhlcvModel>> Get(
+    public async Task<OhlcvModels> Get(
+        int days,
+        bool runSingleRequest = false,
         OhlcvSymbol? symbol = null,
         string timeFrame = "30m",
-        DateTime? from = null,
-        DateTime? to = null,
         long limit = 1000,
         Dictionary<string, object>? parameters = null,
         CancellationToken ct = default
@@ -34,39 +36,82 @@ internal sealed class OhlcvService(
     {
         logger.LogInformation("FetchOHLCV. Prepare to get data");
 
-        OhlcvSymbol actualSymbol = symbol ?? OhlcvSymbol.Btc;
-        string symbolString = actualSymbol.ToStringValue();
-        List<OhlcvModel> ohlcvList = new();
+        OhlcvModels ohlcvModels = new();
 
-        //цикл и повторные запросы
-        List<OhlcvModel> data = await ohlcvClient.FetchOhlcv(
-            parameters: parameters,
-            symbol: symbolString,
-            timeFrame: timeFrame,
-            from: from,
-            to: to,
-            limit: limit + LastCandleIncrement);
-        ohlcvList = data; //временная строка. заменить на Add
+        OhlcvDaysConstant? daysConstant = OhlcvDaysConstantCreate(runSingleRequest, timeFrame, days);
+        if (daysConstant == null) return ohlcvModels;
 
-        if (ohlcvList.Count == 0)
+        int daysRemains = days;
+        bool firstIteration = true;
+        DateTime lastTimestamp = DateTime.Now;
+        while (true)
         {
-            logger.LogInformation("FetchOHLCV empty response");
-            return [];
-        }
-        ohlcvList.RemoveAt(ohlcvList.Count - LastCandleIncrement);
+            int daysToTake = daysRemains > daysConstant.MaxDays ? daysConstant.MaxDays : daysRemains;
+            DateTime to = lastTimestamp;
+            DateTime from = to.AddDays(-daysToTake);
 
-        string outputDir = exportPathProvider.GetOutputDirectory(rootOutputDir, DateTime.UtcNow);
+            List<OhlcvModel> data = await ohlcvClient.FetchOhlcv(
+                parameters: parameters,
+                symbol: (symbol ?? OhlcvSymbol.Btc).ToStringValue(),
+                timeFrame: timeFrame,
+                from: from,
+                to: to,
+                limit: limit + LastCandleIncrement);
+            if (firstIteration)
+            {
+                data.RemoveAt(data.Count - LastCandleIncrement);
+                firstIteration = false;
+            }
+            ohlcvModels.Data.AddRange(data);
+
+            daysRemains -= daysToTake;
+            if (daysRemains == 0) break;
+
+            lastTimestamp = data[0].Timestamp;
+        }
+
+        ohlcvModels.Min = ohlcvModels.Data.Min(x => x.Timestamp);
+        ohlcvModels.Max = ohlcvModels.Data.Max(x => x.Timestamp);
+        ohlcvModels.Days = days;
+        ohlcvModels.Count = ohlcvModels.Data.Count;
+
+        if (ohlcvModels.Count == 0)
+        {
+            logger.LogWarning("FetchOHLCV empty response");
+            return ohlcvModels;
+        }
+
+        string outputDir = exportPathProvider.GetOutputDirectory(rootOutputDir, DateTime.Now);
         Directory.CreateDirectory(outputDir);
 
         string csvPath = Path.Combine(outputDir, "OhlcvData.csv");
         string xlsxPath = Path.Combine(outputDir, "OhlcvData.xlsx");
 
-        await fileExportService.ExportCsvAsync(ohlcvList, csvPath, ct);
-        await fileExportService.ExportXlsxAsync(ohlcvList, xlsxPath, DateTimeConstants.DateFormat, ct);
-        await repository.AddRangeAsync(ohlcvList, ct);
+        await fileExportService.ExportCsvAsync(ohlcvModels, csvPath, ct);
+        await fileExportService.ExportXlsxAsync(ohlcvModels, xlsxPath, DateTimeConstants.DateFormat, ct);
+        await repository.AddRangeAsync(ohlcvModels, ct);
 
         logger.LogInformation("FetchOHLCV. Successfull");
 
-        return ohlcvList;
+        return ohlcvModels;
+    }
+
+    private OhlcvDaysConstant? OhlcvDaysConstantCreate(bool runSingleRequest, string timeFrame, int days)
+    {
+        if (runSingleRequest == false)
+        {
+            OhlcvDaysConstant? daysConstantValue = BybitOhlcvConstants.Values.FirstOrDefault(x => x.TimeFrame == timeFrame);
+            if (daysConstantValue == null)
+            {
+                logger.LogWarning("FetchOHLCV. Wrong timestamp");
+                return null;
+            }
+
+            return daysConstantValue;
+        }
+        else
+        {
+            return new OhlcvDaysConstant(days);
+        }
     }
 }

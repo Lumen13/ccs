@@ -1,24 +1,25 @@
 using CCS.Core.Entities;
 using CCS.Core.Interfaces;
 using CCS.Core.Models;
+using CCS.Core.Options;
 using CCS.Infr.Mappers;
+using Microsoft.Extensions.Options;
 
 namespace CCS.Infr.Services;
 
-internal sealed class OhlcvRepository(CcsDbContext ccsDbContext, Microsoft.Extensions.Options.IOptions<Core.Options.CcsOptions> options) : IOhlcvRepository
+internal sealed class OhlcvRepository(CcsDbContext ccsDbContext, IOptions<CcsOptions> options) : IOhlcvRepository
 {
     private readonly int batchSize = options.Value.DbDefaultBatchSize;
     private readonly CcsDbContext ccsDbContext = ccsDbContext;
 
-    public async Task AddRangeAsync(IEnumerable<OhlcvModel> data, CancellationToken ct = default)
+    public async Task AddRangeAsync(OhlcvModels ohlcvModels, CancellationToken ct = default)
     {
-        List<OhlcvModel> items = data as List<OhlcvModel> ?? [.. data];
-        if (items.Count == 0)
+        if (ohlcvModels.Count == 0)
         {
             return;
         }
 
-        List<OhlcvEntity> entities = items.ToEntityList();
+        List<OhlcvEntity> entities = ohlcvModels.Data.ToEntityList();
 
         int batchSize = this.batchSize;
         for (int i = 0; i < entities.Count; i += batchSize)

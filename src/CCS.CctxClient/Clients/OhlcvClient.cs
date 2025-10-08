@@ -11,10 +11,10 @@ internal sealed class OhlcvClient(IOhlcvValidator validator) : IOhlcvClient
     private readonly Bybit _exchange = new();
 
     public async Task<List<OhlcvModel>> FetchOhlcv(
+        DateTime from,
+        DateTime to,
         string symbol = OhlcvSymbolConstants.Btc,
         string timeFrame = "30m",
-        DateTime? from = null,
-        DateTime? to = null,
         long limit = 1000,
         Dictionary<string, object>? parameters = null
     )
@@ -29,15 +29,11 @@ internal sealed class OhlcvClient(IOhlcvValidator validator) : IOhlcvClient
         return ohlcvList.ToModelList(validator);
     }
 
-    private long AddSince(DateTime? from, DateTime? to)
+    private long AddSince(DateTime from, DateTime to)
     {
-        long since = 0;
-        if (from != null && to != null)
-        {
-            TimeSpan dateDiff = to.Value.Subtract(from.Value);
-            var totalMs = (long)dateDiff.TotalMilliseconds;
-            since = _exchange.milliseconds() - totalMs;
-        }
+        TimeSpan dateDiff = to.Subtract(from);
+        var totalMs = (long)dateDiff.TotalMilliseconds;
+        long since = _exchange.milliseconds() - totalMs;
 
         return since;
     }

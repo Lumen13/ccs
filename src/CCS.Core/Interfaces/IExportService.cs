@@ -13,7 +13,7 @@ public interface IExportService
     /// </summary>
     /// <param name="data">Sequence of OHLCV rows to export (kept as-is, no reordering)</param>
     /// <param name="filePath">Target CSV file path</param>
-    Task ExportCsvAsync(IEnumerable<OhlcvModel> data, string filePath, CancellationToken ct = default);
+    Task ExportCsvAsync(OhlcvModels ohlcvModels, string filePath, CancellationToken ct = default);
 
     /// <summary>
     /// Export provided OHLCV data to XLSX file with human-readable timestamp column.
@@ -21,5 +21,5 @@ public interface IExportService
     /// <param name="data">Sequence of OHLCV rows to export (kept as-is, no reordering)</param>
     /// <param name="filePath">Target XLSX file path</param>
     /// <param name="dateFormat">Cell display format for timestamp column</param>
-    Task ExportXlsxAsync(IEnumerable<OhlcvModel> data, string filePath, string dateFormat = DateTimeConstants.DateFormat, CancellationToken ct = default);
+    Task ExportXlsxAsync(OhlcvModels ohlcvModels, string filePath, string dateFormat = DateTimeConstants.DateFormat, CancellationToken ct = default);
 }

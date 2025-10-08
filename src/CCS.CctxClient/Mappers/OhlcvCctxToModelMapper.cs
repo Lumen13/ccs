@@ -13,7 +13,7 @@ public static class OhlcvCctxToModelMapper
     {
         validator.ValidateOrThrow(ohlcv);
 
-        DateTime timestamp = DateTime.UnixEpoch.AddMilliseconds(ohlcv.timestamp!.Value).ToUniversalTime();
+        DateTime timestamp = DateTime.UnixEpoch.AddMilliseconds(ohlcv.timestamp!.Value).ToLocalTime();
         double open = ohlcv.open!.Value;
         double close = ohlcv.close!.Value;
         double high = ohlcv.high!.Value;
