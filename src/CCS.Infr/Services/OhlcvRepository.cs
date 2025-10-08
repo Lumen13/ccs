@@ -12,7 +12,7 @@ internal sealed class OhlcvRepository(CcsDbContext ccsDbContext, IOptions<CcsOpt
     private readonly int batchSize = options.Value.DbDefaultBatchSize;
     private readonly CcsDbContext ccsDbContext = ccsDbContext;
 
-    public async Task AddRangeAsync(OhlcvModels ohlcvModels, CancellationToken ct = default)
+    public async Task AddRangeAsync(OhlcvResponseModel ohlcvModels, CancellationToken ct = default)
     {
         if (ohlcvModels.Count == 0)
         {

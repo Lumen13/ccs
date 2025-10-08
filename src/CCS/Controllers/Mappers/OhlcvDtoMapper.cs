@@ -6,7 +6,7 @@ namespace CCS.Controllers.Mappers;
 /// <summary>
 /// OHLCV mapper: Model -> DTO
 /// </summary>
-public static class OhlcvModelToDtoMapper
+public static class OhlcvDtoMapper
 {
     public static OhlcvDto ToDto(this OhlcvModel ohlcv)
     {
@@ -28,14 +28,27 @@ public static class OhlcvModelToDtoMapper
         return ohlcvModelList;
     }
 
-    public static OhlcvDtoList ToOhlcvDtoList(this OhlcvModels ohlcvModels)
+    public static OhlcvRequestModel ToOhlcvRequestModel(this OhlcvRequestDto dto)
     {
-        OhlcvDtoList ohlcvDtoList = new(
-            ohlcvModels.Data.ToDtoList(),
-            ohlcvModels.Min,
-            ohlcvModels.Max,
-            ohlcvModels.Days,
-            ohlcvModels.Count);
+        OhlcvRequestModel model = new(
+            dto.Days,
+            dto.RunSingleRequest,
+            dto.Symbol,
+            dto.TimeFrame,
+            dto.Limit,
+            dto.Parameters);
+
+        return model;
+    }
+
+    public static OhlcvResponseDto ToOhlcvResponseDto(this OhlcvResponseModel model)
+    {
+        OhlcvResponseDto ohlcvDtoList = new(
+            model.Data.ToDtoList(),
+            model.Min,
+            model.Max,
+            model.Days,
+            model.Count);
 
         return ohlcvDtoList;
     }

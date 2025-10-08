@@ -1,7 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using CCS.CctxClient.Interfaces;
+﻿using CCS.CctxClient.Interfaces;
 using CCS.Core.Interfaces;
 using CCS.Impl.Services;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace CCS.Impl;
 

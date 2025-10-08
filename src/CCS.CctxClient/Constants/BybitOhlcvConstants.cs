@@ -1,4 +1,4 @@
-﻿namespace CCS.Core.Constants;
+﻿namespace CCS.CctxClient.Constants;
 
 /// <summary>
 /// Ohlcv value which identify the number of possible records received for a certain number of days

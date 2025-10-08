@@ -1,9 +1,9 @@
 using System.Globalization;
 using System.Text;
-using ClosedXML.Excel;
 using CCS.Core.Constants;
 using CCS.Core.Interfaces;
 using CCS.Core.Models;
+using ClosedXML.Excel;
 
 namespace CCS.Excel.Services;
 
@@ -12,7 +12,7 @@ internal sealed class ExportService : IExportService
     private readonly CultureInfo culture = CultureInfo.InvariantCulture;
     private readonly string dateTimeFormat = "yyyy-MM-dd HH:mm:ss";
 
-    public async Task ExportCsvAsync(OhlcvModels ohlcvModels, string filePath, CancellationToken ct = default)
+    public async Task ExportCsvAsync(OhlcvResponseModel ohlcvModels, string filePath, CancellationToken ct = default)
     {
         Directory.CreateDirectory(Path.GetDirectoryName(filePath)!);
 
@@ -45,7 +45,7 @@ internal sealed class ExportService : IExportService
         await writer.FlushAsync(ct);
     }
 
-    public Task ExportXlsxAsync(OhlcvModels ohlcvModels, string filePath, string dateFormat = DateTimeConstants.DateFormat, CancellationToken ct = default)
+    public Task ExportXlsxAsync(OhlcvResponseModel ohlcvModels, string filePath, string dateFormat = DateTimeConstants.DateFormat, CancellationToken ct = default)
     {
         Directory.CreateDirectory(Path.GetDirectoryName(filePath)!);
 

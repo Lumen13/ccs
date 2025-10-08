@@ -7,7 +7,7 @@ namespace CCS.CctxClient.Mappers;
 /// <summary>
 /// Ohlcv маппер
 /// </summary>
-public static class OhlcvCctxToModelMapper
+public static class CctxMapper
 {
     public static OhlcvModel ToModel(this OHLCV ohlcv, IOhlcvValidator validator)
     {
@@ -20,7 +20,7 @@ public static class OhlcvCctxToModelMapper
         double low = ohlcv.low!.Value;
         double volume = ohlcv.volume ?? 0d;
 
-        OhlcvModel ohlcvDto = new(
+        OhlcvModel ohlcvModel = new(
             timestamp: timestamp,
             open: open,
             close: close,
@@ -28,7 +28,7 @@ public static class OhlcvCctxToModelMapper
             low: low,
             volume: volume);
 
-        return ohlcvDto;
+        return ohlcvModel;
     }
 
     public static List<OhlcvModel> ToModelList(this List<OHLCV> ohlcvList, IOhlcvValidator validator)

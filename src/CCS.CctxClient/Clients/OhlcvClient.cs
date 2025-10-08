@@ -10,7 +10,7 @@ internal sealed class OhlcvClient(IOhlcvValidator validator) : IOhlcvClient
 {
     private readonly Bybit _exchange = new();
 
-    public async Task<List<OhlcvModel>> FetchOhlcv(
+    public async Task<List<OhlcvModel>> FetchOhlcvAsync(
         DateTime from,
         DateTime to,
         string symbol = OhlcvSymbolConstants.Btc,

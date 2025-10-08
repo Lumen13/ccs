@@ -3,7 +3,7 @@
 /// <summary>
 /// <see cref="OhlcvModel"/> with counter
 /// </summary>
-public class OhlcvModels(List<OhlcvModel>? data = null, DateTime? min = null, DateTime? max = null, int days = 0, int count = 0)
+public class OhlcvResponseModel(List<OhlcvModel>? data = null, DateTime? min = null, DateTime? max = null, int days = 0, int count = 0)
 {
     /// <summary>
     /// Data list

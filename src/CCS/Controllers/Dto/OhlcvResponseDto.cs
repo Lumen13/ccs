@@ -3,9 +3,9 @@
 /// <summary>
 /// DTO for an OHLCV candle
 /// </summary>
-public record OhlcvDtoList
+public record OhlcvResponseDto
 {
-    public OhlcvDtoList(List<OhlcvDto> data, DateTime min, DateTime max, int days, int count)
+    public OhlcvResponseDto(List<OhlcvDto> data, DateTime min, DateTime max, int days, int count)
     {
         Data = data;
         Min = min;

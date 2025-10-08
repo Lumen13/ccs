@@ -19,7 +19,7 @@ public interface IOhlcvClient
     /// <param name="parameters">Additional parameters. For example, "interval".
     /// Parameter "category" ("linear") is required to obtain correct information</param>
     /// <returns>List of OHLCV models</returns>
-    Task<List<OhlcvModel>> FetchOhlcv(
+    Task<List<OhlcvModel>> FetchOhlcvAsync(
         DateTime from,
         DateTime to,
         string symbol = OhlcvSymbolConstants.Btc,

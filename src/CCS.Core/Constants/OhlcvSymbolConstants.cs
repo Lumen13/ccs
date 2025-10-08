@@ -19,12 +19,12 @@ public enum OhlcvSymbol
     /// Bitcoin/USDT symbol
     /// </summary>
     Btc,
-    
+
     /// <summary>
     /// Solana/USDT symbol
     /// </summary>
     Sol,
-    
+
     /// <summary>
     /// Ethereum/USDT symbol
     /// </summary>
@@ -43,7 +43,7 @@ public static class OhlcvSymbolExtensions
         OhlcvSymbol.Eth => OhlcvSymbolConstants.Eth,
         _ => throw new ArgumentException("Unknown symbol")
     };
-    
+
     public static OhlcvSymbol FromStringValue(string value) => value switch
     {
         OhlcvSymbolConstants.Btc => OhlcvSymbol.Btc,
