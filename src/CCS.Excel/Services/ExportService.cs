@@ -52,6 +52,11 @@ internal sealed class ExportService : IExportService
         using XLWorkbook workbook = new();
         IXLWorksheet sheet = workbook.Worksheets.Add("OHLCV");
 
+        // Set default font to avoid probing system fonts during layout
+        workbook.Style.Font.FontName = "Calibri";
+        workbook.Style.Font.FontSize = 11;
+        const int DefaultColumnWidth = 22;
+
         sheet.Cell(1, 1).Value = nameof(OhlcvModel.Timestamp);
         sheet.Cell(1, 2).Value = nameof(OhlcvModel.Open);
         sheet.Cell(1, 3).Value = nameof(OhlcvModel.High);
@@ -77,7 +82,13 @@ internal sealed class ExportService : IExportService
             row++;
         }
 
-        sheet.Columns().AdjustToContents();
+        // Fixed column widths to avoid automatic font probing
+        sheet.Column(1).Width = DefaultColumnWidth; // Timestamp
+        sheet.Column(2).Width = DefaultColumnWidth; // Open
+        sheet.Column(3).Width = DefaultColumnWidth; // High
+        sheet.Column(4).Width = DefaultColumnWidth; // Low
+        sheet.Column(5).Width = DefaultColumnWidth; // Close
+        sheet.Column(6).Width = DefaultColumnWidth; // Volume
 
         workbook.SaveAs(filePath);
 

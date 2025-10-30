@@ -32,6 +32,7 @@ artifacts/
 
 *.vs
 /output
+/src/CCS/output
 !appsettings.Development.json
 
 # ASP.NET Scaffolding

@@ -23,7 +23,7 @@ public class OhlcvController(
     /// <returns>List of OHLCV models</returns>
     [HttpGet]
     [ProducesResponseType(typeof(OhlcvResponseDto), StatusCodes.Status200OK)]
-    public async Task<ActionResult<OhlcvResponseDto>> Get(OhlcvRequestDto request, CancellationToken ct = default)
+    public async Task<ActionResult<OhlcvResponseDto>> Get([FromQuery] OhlcvRequestDto request, CancellationToken ct = default)
     {
         OhlcvResponseModel ohlcvModels = await ohlcvService.GetAsync(request.ToOhlcvRequestModel(), ct);
 

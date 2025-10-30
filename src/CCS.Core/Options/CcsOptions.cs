@@ -1,10 +1,8 @@
-using System.Reflection;
-
 namespace CCS.Core.Options;
 
 public sealed class CcsOptions
 {
-    private string rootOutputDir = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\..\\..\\..\\..\\..\\output";
+    private string? rootOutputDir;
 
     public ConnectionStringsOptions ConnectionStrings { get; set; } = new ConnectionStringsOptions();
 
@@ -12,8 +10,22 @@ public sealed class CcsOptions
 
     public string RootOutputDir
     {
-        get => rootOutputDir;
-        set => rootOutputDir = string.IsNullOrEmpty(value) ? rootOutputDir : value;
+        get
+        {
+            if (string.IsNullOrWhiteSpace(rootOutputDir))
+            {
+                throw new ArgumentNullException(nameof(RootOutputDir));
+            }
+            return rootOutputDir;
+        }
+        set
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                throw new ArgumentNullException(nameof(RootOutputDir));
+            }
+            rootOutputDir = value;
+        }
     }
 }
 
