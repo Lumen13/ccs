@@ -31,7 +31,7 @@ public static class OhlcvDtoMapper
     public static OhlcvRequestModel ToOhlcvRequestModel(this OhlcvRequestDto dto)
     {
         OhlcvRequestModel model = new(
-            dto.Days,
+            dto.TimeInterval,
             dto.RunSingleRequest,
             dto.Symbol,
             dto.TimeFrame,
@@ -47,7 +47,7 @@ public static class OhlcvDtoMapper
             model.Data.ToDtoList(),
             model.Min,
             model.Max,
-            model.Days,
+            model.TimeInterval,
             model.Count);
 
         return ohlcvDtoList;

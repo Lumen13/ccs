@@ -5,12 +5,12 @@
 /// </summary>
 public record OhlcvResponseDto
 {
-    public OhlcvResponseDto(List<OhlcvDto> data, DateTime min, DateTime max, int days, int count)
+    public OhlcvResponseDto(List<OhlcvDto> data, DateTime min, DateTime max, string timeInterval, int count)
     {
         Data = data;
         Min = min;
         Max = max;
-        Days = days;
+        TimeInterval = timeInterval;
         Count = count;
     }
 
@@ -30,9 +30,9 @@ public record OhlcvResponseDto
     public DateTime Max { get; init; }
 
     /// <summary>
-    /// Days taked
+    /// Total interval requested (e.g., "1m","1h","2d")
     /// </summary>
-    public int Days { get; init; }
+    public string TimeInterval { get; init; }
 
     /// <summary>
     /// Data records count

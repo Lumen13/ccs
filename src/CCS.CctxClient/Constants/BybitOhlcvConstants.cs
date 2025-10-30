@@ -5,31 +5,31 @@
 /// </summary>
 public static class BybitOhlcvConstants
 {
-    public static readonly IReadOnlyCollection<OhlcvDaysConstant> Values = [
-        new OhlcvDaysConstant("30m", 20, 959)
+    public static readonly IReadOnlyCollection<OhlcvIntervalConstant> Values = [
+        new OhlcvIntervalConstant("30m", "20d", 959)
         ];
 }
 
 /// <summary>
 /// Ohlcv record with data in context of Days-Timeframe-Count
 /// </summary>
-public sealed record OhlcvDaysConstant
+public sealed record OhlcvIntervalConstant
 {
-    public OhlcvDaysConstant(string timeFrame, int maxDays, int maxRecords)
+    public OhlcvIntervalConstant(string timeFrame, string maxInterval, int maxRecords)
     {
-        MaxDays = maxDays;
+        MaxInterval = maxInterval;
         TimeFrame = timeFrame;
         MaxRecords = maxRecords;
     }
 
-    public OhlcvDaysConstant(int maxDays)
+    public OhlcvIntervalConstant(string maxInterval)
     {
-        MaxDays = maxDays;
+        MaxInterval = maxInterval;
         TimeFrame = string.Empty;
         MaxRecords = int.MaxValue;
     }
 
     public string TimeFrame { get; init; }
-    public int MaxDays { get; init; }
+    public string MaxInterval { get; init; }
     public int MaxRecords { get; init; }
 }

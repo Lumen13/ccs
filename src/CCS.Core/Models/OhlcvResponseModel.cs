@@ -3,7 +3,7 @@
 /// <summary>
 /// <see cref="OhlcvModel"/> with counter
 /// </summary>
-public class OhlcvResponseModel(List<OhlcvModel>? data = null, DateTime? min = null, DateTime? max = null, int days = 0, int count = 0)
+public class OhlcvResponseModel(List<OhlcvModel>? data = null, DateTime? min = null, DateTime? max = null, string timeInterval = "", int count = 0)
 {
     /// <summary>
     /// Data list
@@ -21,9 +21,9 @@ public class OhlcvResponseModel(List<OhlcvModel>? data = null, DateTime? min = n
     public DateTime Max { get; set; } = max ?? DateTime.MaxValue;
 
     /// <summary>
-    /// Days taked
+    /// Total interval requested (e.g., "1m","1h","2d")
     /// </summary>
-    public int Days { get; set; } = days;
+    public string TimeInterval { get; set; } = timeInterval;
 
     /// <summary>
     /// Data records count

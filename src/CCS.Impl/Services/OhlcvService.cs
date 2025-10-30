@@ -27,10 +27,10 @@ internal sealed class OhlcvService(
     {
         logger.LogInformation("FetchOHLCV. Prepare to get data");
 
-        OhlcvDaysConstant? daysConstant = OhlcvDaysConstantCreate(request.RunSingleRequest, request.TimeFrame, request.Days);
-        if (daysConstant == null) return new();
+        OhlcvIntervalConstant? intervalConstant = OhlcvIntervalConstantCreate(request.RunSingleRequest, request.TimeFrame, request.TimeInterval);
+        if (intervalConstant == null) return new();
 
-        OhlcvResponseModel? response = await FetchOhlcvAsync(request, daysConstant);
+        OhlcvResponseModel? response = await FetchOhlcvAsync(request, intervalConstant);
         if (response == null) return new();
 
         await ExportDataToFileAsync(response, ct);
@@ -53,17 +53,19 @@ internal sealed class OhlcvService(
         await fileExportService.ExportXlsxAsync(response, xlsxPath, DateTimeConstants.DateFormat, ct);
     }
 
-    private async Task<OhlcvResponseModel?> FetchOhlcvAsync(OhlcvRequestModel request, OhlcvDaysConstant daysConstant)
+    private async Task<OhlcvResponseModel?> FetchOhlcvAsync(OhlcvRequestModel request, OhlcvIntervalConstant intervalConstant)
     {
         OhlcvResponseModel response = new();
-        int daysRemains = request.Days;
+        TimeSpan totalInterval = ParseInterval(request.TimeInterval);
+        TimeSpan remain = totalInterval;
         bool firstIteration = true;
         DateTime lastTimestamp = DateTime.Now;
         while (true)
         {
-            int daysToTake = daysRemains > daysConstant.MaxDays ? daysConstant.MaxDays : daysRemains;
+            TimeSpan maxChunk = ParseInterval(intervalConstant.MaxInterval);
+            TimeSpan take = remain > maxChunk ? maxChunk : remain;
             DateTime to = lastTimestamp;
-            DateTime from = to.AddDays(-daysToTake);
+            DateTime from = to - take;
 
             List<OhlcvModel> data = await ohlcvClient.FetchOhlcvAsync(
                 parameters: request.Parameters,
@@ -74,43 +76,70 @@ internal sealed class OhlcvService(
                 limit: request.Limit + LastCandleIncrement);
             if (firstIteration)
             {
-                data.RemoveAt(data.Count - LastCandleIncrement);
+                if (data.Count >= LastCandleIncrement)
+                {
+                    data.RemoveAt(data.Count - LastCandleIncrement);
+                }
                 firstIteration = false;
             }
+
+            if (data.Count == 0)
+            {
+                break;
+            }
+
             response.Data.AddRange(data);
 
-            daysRemains -= daysToTake;
-            if (daysRemains == 0) break;
+            remain -= take;
+            if (remain <= TimeSpan.Zero) break;
 
             lastTimestamp = data[0].Timestamp;
         }
 
-        response.Min = response.Data.Min(x => x.Timestamp);
-        response.Max = response.Data.Max(x => x.Timestamp);
-        response.Days = request.Days;
+        if (response.Data.Count > 0)
+        {
+            response.Min = response.Data.Min(x => x.Timestamp);
+            response.Max = response.Data.Max(x => x.Timestamp);
+        }
+        response.TimeInterval = request.TimeInterval;
         response.Count = response.Data.Count;
 
         if (response.Count == 0) logger.LogWarning("FetchOHLCV empty response");
 
-        return response.Count == 0 ? null : response;
+        return response;
     }
 
-    private OhlcvDaysConstant? OhlcvDaysConstantCreate(bool runSingleRequest, string timeFrame, int days)
+    private OhlcvIntervalConstant? OhlcvIntervalConstantCreate(bool runSingleRequest, string timeFrame, string interval)
     {
         if (runSingleRequest == false)
         {
-            OhlcvDaysConstant? daysConstantValue = BybitOhlcvConstants.Values.FirstOrDefault(x => x.TimeFrame == timeFrame);
-            if (daysConstantValue == null)
+            OhlcvIntervalConstant? value = BybitOhlcvConstants.Values.FirstOrDefault(x => x.TimeFrame == timeFrame);
+            if (value == null)
             {
                 logger.LogWarning("FetchOHLCV. Wrong timestamp");
                 return null;
             }
 
-            return daysConstantValue;
+            return value;
         }
         else
         {
-            return new OhlcvDaysConstant(days);
+            return new OhlcvIntervalConstant(interval);
         }
+    }
+
+    private static TimeSpan ParseInterval(string interval)
+    {
+        if (string.IsNullOrWhiteSpace(interval)) throw new ArgumentException("timeInterval is empty");
+        interval = interval.Trim().ToLowerInvariant();
+        int num = int.Parse(new string(interval.TakeWhile(char.IsDigit).ToArray()));
+        char unit = interval[^1];
+        return unit switch
+        {
+            'm' => TimeSpan.FromMinutes(num),
+            'h' => TimeSpan.FromHours(num),
+            'd' => TimeSpan.FromDays(num),
+            _ => throw new ArgumentException($"Unsupported interval unit: {unit}")
+        };
     }
 }
