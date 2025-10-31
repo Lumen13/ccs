@@ -33,24 +33,36 @@ internal sealed class OhlcvService(
         OhlcvResponseModel? response = await FetchOhlcvAsync(request, intervalConstant);
         if (response == null) return new();
 
-        await ExportDataToFileAsync(response, ct);
-        await repository.AddRangeAsync(response, ct);
+        await ExportDataToFileAsync(response, request.TimeFrame, request.RunSingleRequest, ct);
+        await repository.AddRangeAsync(request.TimeFrame, request.RunSingleRequest, response, ct);
 
         logger.LogInformation("FetchOHLCV. Successfull");
 
         return response;
     }
 
-    private async Task ExportDataToFileAsync(OhlcvResponseModel response, CancellationToken ct)
+    private async Task ExportDataToFileAsync(OhlcvResponseModel response, string timeFrame, bool runSingleRequest, CancellationToken ct)
     {
-        string outputDir = exportPathProvider.GetOutputDirectory(rootOutputDir, DateTime.Now);
+        // Skip export if single request or timeframe is not known in constants
+        if (runSingleRequest || BybitOhlcvConstants.Values.All(v => v.TimeFrame != timeFrame))
+        {
+            return;
+        }
+
+        string outputDir = rootOutputDir;
         Directory.CreateDirectory(outputDir);
 
-        string csvPath = Path.Combine(outputDir, "OhlcvData.csv");
-        string xlsxPath = Path.Combine(outputDir, "OhlcvData.xlsx");
+        string csvPath = Path.Combine(outputDir, $"ohlcv_{timeFrame}.csv");
+        string xlsxPath = Path.Combine(outputDir, "ohlcv.xlsx");
 
         await fileExportService.ExportCsvAsync(response, csvPath, ct);
-        await fileExportService.ExportXlsxAsync(response, xlsxPath, DateTimeConstants.DateFormat, ct);
+        await fileExportService.ExportXlsxAsync(
+            response,
+            xlsxPath,
+            timeFrame,
+            DateTimeConstants.DateFormat,
+            BybitOhlcvConstants.Values.Select(v => v.TimeFrame),
+            ct);
     }
 
     private async Task<OhlcvResponseModel?> FetchOhlcvAsync(OhlcvRequestModel request, OhlcvIntervalConstant intervalConstant)

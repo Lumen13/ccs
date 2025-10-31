@@ -41,6 +41,18 @@ public static class OhlcvDtoMapper
         return model;
     }
 
+    public static AllOhlcvRequestModel ToAllOhlcvRequestModel(this AllOhlcvRequestDto dto)
+    {
+        AllOhlcvRequestModel model = new(
+            dto.TimeInterval,
+            dto.RunSingleRequest,
+            dto.Symbol,
+            dto.Limit,
+            dto.Parameters);
+
+        return model;
+    }
+
     public static OhlcvResponseDto ToOhlcvResponseDto(this OhlcvResponseModel model)
     {
         OhlcvResponseDto ohlcvDtoList = new(

@@ -21,5 +21,11 @@ public interface IExportService
     /// <param name="data">Sequence of OHLCV rows to export (kept as-is, no reordering)</param>
     /// <param name="filePath">Target XLSX file path</param>
     /// <param name="dateFormat">Cell display format for timestamp column</param>
-    Task ExportXlsxAsync(OhlcvResponseModel ohlcvModels, string filePath, string dateFormat = DateTimeConstants.DateFormat, CancellationToken ct = default);
+    Task ExportXlsxAsync(
+        OhlcvResponseModel ohlcvModels,
+        string filePath,
+        string sheetName,
+        string dateFormat = DateTimeConstants.DateFormat,
+        IEnumerable<string>? sheetOrder = null,
+        CancellationToken ct = default);
 }

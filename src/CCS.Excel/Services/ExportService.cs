@@ -11,6 +11,7 @@ internal sealed class ExportService : IExportService
 {
     private readonly CultureInfo culture = CultureInfo.InvariantCulture;
     private readonly string dateTimeFormat = "yyyy-MM-dd HH:mm:ss";
+    private static readonly System.Collections.Concurrent.ConcurrentDictionary<string, XLWorkbook> Workbooks = new();
 
     public async Task ExportCsvAsync(OhlcvResponseModel ohlcvModels, string filePath, CancellationToken ct = default)
     {
@@ -45,12 +46,24 @@ internal sealed class ExportService : IExportService
         await writer.FlushAsync(ct);
     }
 
-    public Task ExportXlsxAsync(OhlcvResponseModel ohlcvModels, string filePath, string dateFormat = DateTimeConstants.DateFormat, CancellationToken ct = default)
+    public Task ExportXlsxAsync(
+        OhlcvResponseModel ohlcvModels,
+        string filePath,
+        string sheetName,
+        string dateFormat = DateTimeConstants.DateFormat,
+        IEnumerable<string>? sheetOrder = null,
+        CancellationToken ct = default)
     {
         Directory.CreateDirectory(Path.GetDirectoryName(filePath)!);
 
-        using XLWorkbook workbook = new();
-        IXLWorksheet sheet = workbook.Worksheets.Add("OHLCV");
+        XLWorkbook workbook = Workbooks.GetOrAdd(filePath, _ => new XLWorkbook());
+
+        if (workbook.Worksheets.TryGetWorksheet(sheetName, out IXLWorksheet? existing))
+        {
+            workbook.Worksheets.Delete(existing.Name);
+        }
+
+        IXLWorksheet sheet = workbook.Worksheets.Add(sheetName);
 
         // Set default font to avoid probing system fonts during layout
         workbook.Style.Font.FontName = "Calibri";
@@ -89,6 +102,19 @@ internal sealed class ExportService : IExportService
         sheet.Column(4).Width = DefaultColumnWidth; // Low
         sheet.Column(5).Width = DefaultColumnWidth; // Close
         sheet.Column(6).Width = DefaultColumnWidth; // Volume
+
+        // Optional sheet ordering
+        if (sheetOrder != null)
+        {
+            int position = 1;
+            foreach (var tf in sheetOrder)
+            {
+                if (workbook.Worksheets.TryGetWorksheet(tf, out IXLWorksheet? ws))
+                {
+                    ws.Position = position++;
+                }
+            }
+        }
 
         workbook.SaveAs(filePath);
 

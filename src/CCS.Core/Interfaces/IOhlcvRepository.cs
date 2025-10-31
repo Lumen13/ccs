@@ -12,5 +12,5 @@ public interface IOhlcvRepository
     /// </summary>
     /// <param name="data">OHLCV data-list</param>
     /// <param name="ct">CancellationToken</param>
-    Task AddRangeAsync(OhlcvResponseModel ohlcvModels, CancellationToken ct = default);
+    Task AddRangeAsync(string timeFrame, bool runSingleRequest, OhlcvResponseModel ohlcvModels, CancellationToken ct = default);
 }
